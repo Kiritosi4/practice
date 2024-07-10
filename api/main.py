@@ -1,7 +1,10 @@
-from fastapi import FastAPI, HTTPException
-from models import Order, AddOrderModel
-import telegram_service
+from fastapi import FastAPI, HTTPException, Depends, Request
+from .models import Order, AddOrderModel
+from . import telegram_service
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_limiter import FastAPILimiter
+from fastapi_limiter.depends import RateLimiter
+from .RateLimiter import RateLimitByIP
 
 app = FastAPI()
 
@@ -11,7 +14,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
-
 
 
 @app.post("/api/order")
@@ -29,3 +31,8 @@ async def SendOrder(order : AddOrderModel):
     await telegram_service.AsyncSendMessageToMainChat(f"===Новая заявка===\n👤 Имя: {order.name}\n📌 Метод связи: {order.method}\n📞 Телефон: {order.phone}\n📧 Почта: {order.email}\n\n💬Сообщение:\n{order.message}")
 
     return order
+
+@app.get("/api/order")
+@RateLimitByIP(maxCalls=2, timeFrame=10)
+async def Test(request : Request):
+    return request.headers

@@ -15,6 +15,7 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+      - ./html:/usr/share/nginx/html
     ports:
       - "80:80"
       - "443:443"
@@ -26,4 +27,6 @@ services:
     volumes: 
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot --force-renewal --email mademan77794@gmail.com -d stroymedium.ru --agree-tos
+    #command: certonly --webroot -w /var/www/certbot --force-renewal --email mademan77794@gmail.com -d stroymedium.ru --agree-tos
+    depends_on:
+      - proxy

@@ -1,6 +1,5 @@
 import aiogram
-import config
-import models
+from . import config
 
 bot = aiogram.Bot(config.tg_api)
 
