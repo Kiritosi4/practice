@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/api/"
+const API_URL = "https://stroymedium.ru/api/"
 
 function getFormData($form){
     var unindexed_array = $form.serializeArray();
@@ -16,13 +16,13 @@ $(document).ready(function(){
 
     $(".phone_input").mask("+7 (999) 999-99-99");
 
-    $('input[name="contact"]').on('change', function() {
+    $('input[name="method"]').on('change', function() {
         if ($(this).val() === 'phone' || $(this).val() === 'telegram' || $(this).val() === 'whatsapp') {
-            $('#contact_phone_input').show();
-            $('#contact_email_input').hide();
+            $('.contact_phone_input').show();
+            $('.contact_email_input').hide();
         } else{
-            $('#contact_phone_input').hide();
-            $('#contact_email_input').show();
+            $('.contact_phone_input').hide();
+            $('.contact_email_input').show();
         }
     });
 

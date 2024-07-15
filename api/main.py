@@ -10,13 +10,14 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://stroymedium.ru", "http://stroymedium.ru"],
     allow_methods=["*"],
     allow_headers=["*"]
 )
 
 
 @app.post("/api/order")
+@RateLimitByIP(maxCalls=1, timeFrame=900)
 async def SendOrder(order : AddOrderModel):
     if order.method == "mail" and (order.email == None or'@'not in order.email or len(order.email) < 5):
         raise HTTPException(status_code=400, detail="Почта указана некорректно")
@@ -35,4 +36,4 @@ async def SendOrder(order : AddOrderModel):
 @app.get("/api/order")
 @RateLimitByIP(maxCalls=2, timeFrame=10)
 async def Test(request : Request):
-    return request.headers
+    return request.headers.get("X-Forwarded-For")

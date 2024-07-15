@@ -13,17 +13,18 @@ def RateLimitByIP(maxCalls : int, timeFrame : int):
         async def wrapper(request : Request, *args, **kwargs):
             now = int(time.time())
             request_url = str(request.url)
-            print(calls)
+            client_ip = request.headers.get("X-Forwarded-For")
+            
             if request_url in calls:
                 ClearCallsDict(calls, request_url, timeFrame)
-                if request.client.host in calls[request_url]:
-                    if len([x for x in calls[request_url][request.client.host] if time.time() < x + timeFrame]) > maxCalls:
+                if client_ip in calls[request_url]:
+                    if len([x for x in calls[request_url][client_ip] if time.time() < x + timeFrame]) > maxCalls:
                         raise HTTPException(status_code=429, detail="Rate limit exceeded")
-                    calls[request_url][request.client.host].append(now)
+                    calls[request_url][client_ip].append(now)
                 else:
-                    calls[request_url][request.client.host] = [now]
+                    calls[request_url][client_ip] = [now]
             else:
-                calls[request_url] = {request.client.host: [now]}
+                calls[request_url] = {client_ip: [now]}
 
             return await func(request, *args, **kwargs)
         
